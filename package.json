@@ -1,0 +1,1 @@
+{"name":"cubelab","version":"1.0.0","private":true,"description":"CubeLab sur Netlify (Functions + Blobs)","dependencies":{"@netlify/blobs":"^11.1.3"}}
