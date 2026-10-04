@@ -2,6 +2,7 @@
 import crypto from 'node:crypto';
 import { promisify } from 'node:util';
 const scrypt = promisify(crypto.scrypt);
+const MASKS = ['full', 'daisy', 'cross', 'crown', 'dcrown', 'ycross', 'edges', 'oll'];
 const PSEUDO = /^[A-Za-z0-9_.-]{3,20}$/, TOK = /^[RLUDFBrludfbMESxyz](2'?|')?$/, DAY = 864e5;
 const sha = t => crypto.createHash('sha256').update(t).digest('hex');
 const hashPw = async (pw, salt) => (await scrypt(pw, salt, 64)).toString('hex');
@@ -83,7 +84,7 @@ export async function handle(req, ctx, S) {
       ids.add(a.id);
       const name = str(a.name, 60), cat = str(a.cat, 40);
       if (!name || !cat || !okMoves(a.moves, 1) || !okMoves(a.setup || '', 0)) return bad('Méthode invalide : ' + (name || 'sans nom'));
-      clean.push({ id: a.id, name, cat, moves: a.moves.trim(), setup: (a.setup || '').trim(), note: str(a.note, 500), pub: !!a.pub });
+      clean.push({ id: a.id, name, cat, moves: a.moves.trim(), setup: (a.setup || '').trim(), note: str(a.note, 500), pub: !!a.pub, mask: MASKS.includes(a.mask) ? a.mask : 'full' });
     }
     await S.setJSON('algos/' + user.id, clean);
     const pubs = clean.filter(a => a.pub).map(({ pub, ...a }) => a);
